@@ -19,7 +19,7 @@ userRouter.get('/myblogs', async (req, res, next) => {
                 res.status(200).json({ status: true, blogList })
             }).catch((err) => {
                 console.log(err);
-                res.status(401).json({ status: "falseyy", message: err.message })
+                res.status(401).json({ status: false, message: err.message })
             })
     })(req, res, next)
 })

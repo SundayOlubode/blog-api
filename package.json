@@ -21,7 +21,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "test": "jest --testTimeout=5000 --detectOpenHandles"
+    "test": "jest --testTimeout=5000"
   },
   "repository": {
     "type": "git",
