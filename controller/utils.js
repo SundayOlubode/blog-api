@@ -93,7 +93,7 @@ const generateJWT = (user) => {
     try {
         
         const payload = { _id: user._id, email: user.email, password: user.password, fullname: user.firstname + ' ' + user.lastname }
-        const token = jwt.sign(payload, process.env.SECRET_0R_KEY, { expiresIn: '1h' })
+        const token = jwt.sign(payload, 'shhh_secret', { expiresIn: '1h' })
 
         return token;
     } catch (error) { return error }

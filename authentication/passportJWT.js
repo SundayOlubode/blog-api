@@ -11,7 +11,7 @@ const ExtractJWT = passportjwt.ExtractJwt
 
 passport.use(
     new JWTStrategy({
-        secretOrKey: process.env.SECRET_0R_KEY,
+        secretOrKey: 'shhh_secret',
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken()
     }, async (token, done) => {
         if(!token){
