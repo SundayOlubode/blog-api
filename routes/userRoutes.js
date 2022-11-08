@@ -36,7 +36,7 @@ userRouter.get('/:blogId', passport.authenticate('jwt', { session: false }), asy
 
 
 
-userRouter.post('/', async (req, res, next) => {
+userRouter.post('/create', async (req, res, next) => {
     passport.authenticate('jwt', { session: false }, (err, user, info) => {
         if (err) { return next(err); }
         createABlog(req, user)
@@ -48,7 +48,7 @@ userRouter.post('/', async (req, res, next) => {
     })(req, res, next)
 })
 
-userRouter.patch('/:id', async (req, res, next) => {
+userRouter.patch('/update/:id', async (req, res, next) => {
     passport.authenticate('jwt', { session: false }, (err, token, info) => {
         if (err) { return next(err); }
         updateBlog(req, token)
@@ -59,7 +59,7 @@ userRouter.patch('/:id', async (req, res, next) => {
             })
     })(req, res, next)
 })
-userRouter.delete('/:id', async (req, res, next) => {
+userRouter.delete('/delete/:id', async (req, res, next) => {
     passport.authenticate('jwt', { session: false }, (err, user, info) => {
         if (err) { return next(err); }
         deleteBlogById(req, req, user, next)

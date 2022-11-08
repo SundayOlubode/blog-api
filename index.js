@@ -18,15 +18,15 @@ app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: false }))
 
 //routes
-app.use('/blogs', blogRoutes)
+app.use('/home', blogRoutes)
 app.use('/user', userRouter)
 
-
+app.set('views engine', 'ejs')
 
 //Connect to databse
 database.connection()
 
-app.post('/', (req, res) => {
+app.get('/', (req, res) => {
     res.status(200).json({
         message: 'Welcome to Altschool Student Blog'
     })

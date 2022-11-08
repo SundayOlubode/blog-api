@@ -4,7 +4,7 @@ const { getAllBlogs } = require('../controller/blogpost')
 require('../authentication/passportJWT')
 
 
-blogRouter.get('/', (req, res) => {
+blogRouter.get('/allblogs', (req, res) => {
     getAllBlogs(req, res)
         .then((blogs) => {
             res.status(200).json(blogs)
