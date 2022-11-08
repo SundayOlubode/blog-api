@@ -209,7 +209,7 @@ Success
 ---
 ### Get a blog with id  (logged in user)
 
-- Route: /user/:blogId
+- Route: /user/myblogs/:blogId
 - Method: GET
 - Header
     - Authorization: Bearer {token}

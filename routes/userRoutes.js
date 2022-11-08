@@ -25,7 +25,7 @@ userRouter.get('/myblogs', async (req, res, next) => {
 })
 
 
-userRouter.get('/:blogId', passport.authenticate('jwt', { session: false }), async (req, res) => {
+userRouter.get('/myblogs/:blogId', passport.authenticate('jwt', { session: false }), async (req, res) => {
     getBlogById(req, res)
         .then((blog) => {
             res.status(200).json({ status: true, blog })
