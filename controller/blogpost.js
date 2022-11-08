@@ -16,18 +16,17 @@ const userModel = require('../Models/userModel')
 
 
 // Get all blogs
-const getAllBlogs = async (req, res) => {
+const getAllBlogs = async (req) => {
 
     let { author, title, tags, readCount, readTime, postTime } = req.query
 
     var query = { state: 'published' }
 
+    if (author) {
+        query = { state: 'published', "author.fullname": author }
+    }
     if (title) { query.title = title }
     if (tags) { query.tags = tags }
-    if (author) {
-        author = { fullname: author }
-        query.author = author
-    }
 
     var options = { offset: 0, limit: 20 };
 
@@ -37,7 +36,6 @@ const getAllBlogs = async (req, res) => {
         if (readCount === 'asc') {
             readCount = -1
             options.sort = { readCount: readCount }
-
         } else {
             readCount = 1
             options.sort = { readCount: readCount }
@@ -67,9 +65,9 @@ const getAllBlogs = async (req, res) => {
 
     }
 
+
     blogs = await blogModel.paginate(query, options)
     blogs = blogs.docs
-
     return blogs
 }
 
@@ -88,23 +86,20 @@ const getBlogById = async (req, res) => {
     return blog
 }
 
-const getMyBlogs = async (user) => {
+const getMyBlogs = async ({ _id }) => {
 
-    let userID = user._id
-
-    const author = await userModel.findById({ _id: userID })
+    const author = await userModel.findById({ _id: _id })
     if (!author) {
         throw new Error('Please log in to access you blog list')
     }
 
-    let blogs = await blogModel.find()
-
+    let blogs = await blogModel.find({ authorID: _id })
     if (!blogs) {
         throw new Error('You do not have any blog yet!')
     }
 
-    var query = { authorID: userID };
-    var options = { offset: 3, limit: 3 };
+    var query = { authorID: _id };
+    var options = { offset: 0, limit: 2 };
 
     blogs = await blogModel.paginate(query, options)
     blogs = blogs.docs
