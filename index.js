@@ -7,6 +7,7 @@ require('dotenv').config()
 const blogRoutes = require('./routes/blogRoutes')
 const {generateJWT} = require('./controller/utils')
 const userRouter = require('./routes/userRoutes')
+const loginvalidation = require('./validation/login.validation')
 
 
 const PORT = process.env.PORT
@@ -43,7 +44,7 @@ app.post('/signup',
     })
 
 
-app.post('/login', async (req, res, next) => {    
+app.post('/login', loginvalidation, async (req, res, next) => {    
     passport.authenticate('login', { session: false }, async (err, user, info) => {        
         try {
 
