@@ -68,6 +68,7 @@ const getAllBlogs = async (req) => {
 
     blogs = await blogModel.paginate(query, options)
     blogs = blogs.docs
+
     return blogs
 }
 
