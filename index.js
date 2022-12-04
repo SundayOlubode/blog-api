@@ -5,9 +5,9 @@ const passport = require('passport')
 require('./authentication/passportJWT')
 require('dotenv').config()
 const blogRoutes = require('./routes/blogRoutes')
-const {generateJWT} = require('./controller/utils')
+const { generateJWT } = require('./controller/utils')
 const userRouter = require('./routes/userRoutes')
-const loginvalidation = require('./validation/login.validation')
+const validator = require('./validation/validation')
 
 
 const PORT = process.env.PORT
@@ -34,25 +34,24 @@ app.post('/', (req, res) => {
 })
 
 
-app.post('/signup',
+app.post('/signup', validator.validateSignup,
     passport.authenticate('signup', { session: false }),
     (req, res, next) => {
         res.status(200).json({
             status: 'success',
             message: 'Sign up successful!'
         })
-    })
+})
 
 
-app.post('/login', loginvalidation, async (req, res, next) => {    
-    passport.authenticate('login', { session: false }, async (err, user, info) => {        
+app.post('/login', validator.validateLogin, async (req, res, next) => {
+    passport.authenticate('login', { session: false }, async (err, user, info) => {
         try {
-
             if (err) { return next(err) }
             const token = generateJWT(user)
             res.status(200).json({ user, token })
 
-        }catch (err) {
+        } catch (err) {
             res.status(401).json(err.message)
         }
     })(req, res, next)
