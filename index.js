@@ -24,7 +24,7 @@ const limiter = rateLimit({
 	max: 50, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
 	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-	message: 'Too many request from this user. Please try again after 2 mina',
+	message: 'Too many request from this user. Please try again after 2 mins',
     skipFailedRequests: true
 })
 
