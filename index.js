@@ -28,9 +28,10 @@ const limiter = rateLimit({
 })
 
 //routes
+app.use(limiter)
+
 app.use('/home', blogRoutes)
 app.use('/user', userRouter)
-
 app.set('views engine', 'ejs')
 
 //Connect to databse
