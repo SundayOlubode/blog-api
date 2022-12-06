@@ -147,8 +147,9 @@ const updateBlog = async (req, token) => {
 
     var authorID = blog.authorID
     var userID = token._id
+
     if (authorID != userID) {
-        throw new Error('You do not have access to delete this blog')
+        throw new Error('You do not have access to modify this blog')
     }
 
     if (newBody) { blog.body = await editBlog(req, blog, newBody) }

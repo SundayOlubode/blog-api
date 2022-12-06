@@ -2,7 +2,9 @@ const joi = require('joi')
 
 const validator = (schema) => (req, res, next) => {
     const payload = req.body
-
+    const {state} = req.body
+    const {author} = req.query
+    
     schema.validateAsync(payload, {abortEarly: false})
         .then(() => {
             next()
@@ -38,7 +40,16 @@ const loginSchema = joi.object({
             .required()
 })
 
+const blogSchema = joi.object({
+    author: joi.string()
+            .min(4)
+            .optional(),
+    state: joi.string()
+            .valid('published', 'draft')
+            .optional()
+})
 
 
 exports.validateSignup = validator(signupSchema)
 exports.validateLogin = validator(loginSchema)
+exports.validateBlog = validator(blogSchema)

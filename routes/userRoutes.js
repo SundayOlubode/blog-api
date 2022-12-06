@@ -3,7 +3,14 @@ require('../authentication/passportJWT')
 const passport = require('passport')
 const express = require('express')
 const userRouter = express.Router()
-const { getBlogById, createABlog, deleteBlogById, updateBlog, editBlog, getMyBlogs } = require('../controller/blogpost')
+const validation = require('../validation/validation')
+const { getBlogById, 
+    createABlog, 
+    deleteBlogById, 
+    updateBlog, 
+    editBlog, 
+    getMyBlogs 
+} = require('../controller/blogpost')
 
 
 
@@ -48,7 +55,7 @@ userRouter.post('/', async (req, res, next) => {
     })(req, res, next)
 })
 
-userRouter.patch('/:id', async (req, res, next) => {
+userRouter.patch('/:id', validation.validateBlog ,async (req, res, next) => {
     passport.authenticate('jwt', { session: false }, (err, token, info) => {
         if (err) { return next(err); }
         updateBlog(req, token)

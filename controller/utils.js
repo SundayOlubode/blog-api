@@ -69,7 +69,7 @@ const editBlog = async (req, blog, newBody) => {
         console.log(newBody);
 
         if (newBody === blog.body) {
-            throw new Error(`Provided update same as present body!`)
+            throw new Error(`Provided update same as current body!`)
         }
         return newBody
 
