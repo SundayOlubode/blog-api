@@ -28,15 +28,15 @@ const limiter = rateLimit({
 })
 
 //routes
-app.use(limiter)
-app.use('/blogs', blogRoutes)
+app.use('/home', blogRoutes)
 app.use('/user', userRouter)
 
+app.set('views engine', 'ejs')
 
 //Connect to databse
 database.connection()
 
-app.post('/', (req, res) => {
+app.get('/', (req, res) => {
     res.status(200).json({
         message: 'Welcome to Altschool Student Blog'
     })
