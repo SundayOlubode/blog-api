@@ -7,6 +7,7 @@ require('dotenv').config()
 const localStrategy = require('passport-local').Strategy
 const JWTStrategy = passportjwt.Strategy
 const ExtractJWT = passportjwt.ExtractJwt
+const { generateJWT } = require('../controller/utils')
 
 
 passport.use(
@@ -14,17 +15,18 @@ passport.use(
         secretOrKey: 'shhh_secret',
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken()
     }, async (token, done) => {
-        if(!token){
+        if (!token) {
             return done(null, false)
         }
         try {
-            const user = {_id: token._id, email: token.email, fullname: token.fullname}
-            if(!user){return done(null, false)}
+            const user = { _id: token._id, email: token.email, fullname: token.fullname }
+            if (!user) { return done(null, false) }
             return done(null, user)
         } catch (error) {
             done(error)
         }
-}))
+    })
+)
 
 
 
@@ -36,11 +38,12 @@ passport.use(
     }, async (req, email, password, done) => {
         try {
             let user = req.body
-            user = await userModel.create(user)
-
-            if(!user){return done(null, false)}
-
-            return done(null, user)
+            userModel.create(user)
+                .then((user) => {
+                    return done(null, user)
+                }).catch(() => {
+                    return done(null, false)
+                })
         } catch (error) {
             done(error)
         }
@@ -57,16 +60,15 @@ passport.use(
     }, async (email, password, done) => {
         try {
             const user = await userModel.findOne({ email })
-
             if (!user) { return done(null, false, { message: 'User not found!' }) }
 
             const validate = await user.isValidPassword(password);
             if (!validate) { return done(null, false) }
 
-            done(null, user)
-
+            const token = generateJWT(user)
+            done(null, token)
         } catch (error) {
-            done(error, false)
+            return done(error, false)
         }
     })
 )

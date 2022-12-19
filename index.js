@@ -7,6 +7,7 @@ require('./authentication/passportJWT')
 require('dotenv').config()
 const blogRoutes = require('./routes/blogRoutes')
 const { generateJWT } = require('./controller/utils')
+const { signup, login } = require('./controller/account')
 const userRouter = require('./routes/userRoutes')
 const validation = require('./validation/validation')
 
@@ -20,11 +21,11 @@ app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: false }))
 
 const limiter = rateLimit({
-	windowMs: 2 * 60 * 1000, // 15 minutes
-	max: 50, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-	message: 'Too many request from this user. Please try again after 2 mins',
+    windowMs: 2 * 60 * 1000, // 15 minutes
+    max: 50, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    message: 'Too many request from this user. Please try again after 2 mins',
     skipFailedRequests: true
 })
 
@@ -45,29 +46,10 @@ app.get('/', (req, res) => {
 })
 
 
-app.post('/signup', validation.validateSignup,
-    passport.authenticate('signup', { session: false }),
-    (req, res, next) => {
-        res.status(200).json({
-            status: 'success',
-            message: 'Sign up successful!'
-        })
-})
+app.post('/signup', validation.validateSignup, passport.authenticate('signup', { session: false }), signup)
 
 
-app.post('/login', validation.validateLogin, async (req, res, next) => {
-    passport.authenticate('login', { session: false }, async (err, user, info) => {
-        try {
-            if (err) { return next(err) }
-            const token = generateJWT(user)
-            res.status(200).json({ user, token })
-
-        } catch (err) {
-            res.status(401).json(err.message)
-        }
-    })(req, res, next)
-
-})
+app.post('/login', validation.validateLogin, passport.authenticate('login', { session: false }), login)
 
 
 app.listen(PORT, () => {
