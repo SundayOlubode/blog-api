@@ -5,16 +5,20 @@ const passport = require('passport')
 const rateLimit = require("express-rate-limit");
 require('./authentication/passportJWT')
 require('dotenv').config()
-// const blogRoutes = require('./routes/blogRoutes')
+const blogRoutes = require('./routes/blogRoutes')
+const { generateJWT } = require('./controller/utils')
 const { signup, login } = require('./controller/account')
-const userRouter = require('./routes/user.route')
+const userRouter = require('./routes/userRoutes')
 const validation = require('./validation/validation')
-
-const { getBlogs, getblogById } = require('./controller/blogpost')
 
 const PORT = process.env.PORT
 
 const app = express()
+
+
+//Middlewares
+app.use(bodyparser.json())
+app.use(bodyparser.urlencoded({ extended: false }))
 
 const limiter = rateLimit({
     windowMs: 2 * 60 * 1000, // 15 minutes
@@ -25,29 +29,26 @@ const limiter = rateLimit({
     skipFailedRequests: true
 })
 
-
-//Middlewares
-app.use(bodyparser.json())
-app.use(bodyparser.urlencoded({ extended: false }))
+//routes
 app.use(limiter)
 
-
-//Routers
-// app.use('/home', blogRoutes)
-app.use('/user', passport.authenticate('jwt', {session: false}), userRouter)
-
-// View Engine
+app.use('/home', blogRoutes)
+app.use('/user', userRouter)
 app.set('views engine', 'ejs')
 
-//Databse
+//Connect to databse
 database.connection()
 
-
-app.get('/', getBlogs)
-app.get('/:id', getblogById)
+app.get('/', (req, res) => {
+    res.status(200).json({
+        message: 'Welcome to Altschool Student Blog'
+    })
+})
 
 
 app.post('/signup', validation.validateSignup, passport.authenticate('signup', { session: false }), signup)
+
+
 app.post('/login', validation.validateLogin, passport.authenticate('login', { session: false }), login)
 
 
