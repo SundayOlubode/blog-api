@@ -31,7 +31,6 @@ exports.getBlogs = (req, res, next) => {
   
     }
 
-
     blogModel.paginate(query, options)
     // .populate('users')
     .then((blogs) => {
@@ -39,26 +38,6 @@ exports.getBlogs = (req, res, next) => {
     }).catch((err) => {
         res.status(401).json({ status: false, message: err.message })
     })
-}
-
-exports.getBlogsWithQuery = async () => {
-
-    let { author, title, tags, readCount, readTime, postTime } = req.query
-    var query = { state: 'published' }
-
-    if (author) {
-        query = { state: 'published', "author.fullname": author }
-    }
-    if (title) { query.title = title }
-    if (tags) { query.tags = tags }
-
-    var options = { offset: 0, limit: 20 };
-
-    blogs = await blogModel.paginate(query, options)
-    blogs = blogs.docs
-
-    return blogs
-
 }
 
 
