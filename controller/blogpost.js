@@ -20,62 +20,23 @@ const getAllBlogs = async (req) => {
 
     let { author, title, tags, readCount, readTime, postTime } = req.query
 
-    var query = { state: 'published' }
-
     if (author) {
         query = { state: 'published', "author.fullname": author }
-    }
-    if (title) { query.title = title }
-    if (tags) { query.tags = tags }
+        if (title) { query.title = title }
+        if (tags) { query.tags = tags }
 
-    var options = { offset: 0, limit: 20 };
-
-    // sort by 
-    if (readCount) {
-        readCount = readCount.toLowerCase()
-        if (readCount === 'asc') {
-            readCount = -1
-            options.sort = { readCount: readCount }
-        } else {
-            readCount = 1
-            options.sort = { readCount: readCount }
-        }
-    }
-    if (readTime) {
-        readTime = readTime.toLowerCase()
-        if (readTime === 'asc') {
-            readTime = -1
-            options.sort = { readTime: readTime }
-
-        } else {
-            readTime = 1
-            options.sort = { readTime: readTime }
-        }
-    }
-    if (postTime) {
-        postTime = postTime.toLowerCase()
-        if (postTime === 'asc') {
-            postTime = -1
-            options.sort = { postTime: postTime }
-
-        } else {
-            postTime = 1
-            options.sort = { postTime: postTime }
-        }
-
+  
     }
 
-
-    blogs = await blogModel.paginate(query, options)
-    blogs = blogs.docs
-
-    return blogs
+    blogModel.paginate(query, options)
+    // .populate('users')
+    .then((blogs) => {
+        res.status(200).json(blogs)
+    }).catch((err) => {
+        res.status(401).json({ status: false, message: err.message })
+    })
 }
 
-// Get blog by id
-const getBlogById = async (req, res) => {
-    const { blogId } = req.params;
-    const blog = await blogModel.findById(blogId)
 
     if (!blog) {
         throw new Error(`blog with ID ${blogId} not found!`)
