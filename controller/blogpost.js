@@ -35,8 +35,6 @@ const getAllBlogs = async (req) => {
     }).catch((err) => {
         res.status(401).json({ status: false, message: err.message })
     })
-}
-
 
     if (!blog) {
         throw new Error(`blog with ID ${blogId} not found!`)
