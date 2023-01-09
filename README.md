@@ -214,21 +214,6 @@ Success
 }
 ```
 
-### Get published blogs for user (logged in user)
-
-- Route: /author/myblogs
-- Method: GET
-
-- Responses
-
-Success
-```
-{
-  "status": true,
-  "blogList": []
-}
-```
-
 
 ---
 ### Create a Blog (logged in user)
@@ -245,7 +230,6 @@ Success
     "description": "Recursion in JS",
     "tags": ["DSA", "Recursion"]
 }
-
 ```
 
 - Responses
@@ -273,45 +257,9 @@ Success
 }
 ```
 
----
-### Get a blog with id  (logged in user)
-
-- Route: /author/myblogs/:blogId
-- Method: GET
-- Header
-    - Authorization: Bearer {token}
-
-- Responses
-Success
-```
-{
-  "status": true,
-  "blog": {
-    "author": {
-      "email": "bigshow@gmail.com",
-      "_id": "63667ea856c6eb4f2f960066",
-      "fullname": "Timi Olubode"
-    },
-    "_id": "6369faf30b0896b4b5f26292",
-    "title": "Json token",
-    "authorID": "63667ea856c6eb4f2f960066",
-    "state": "draft",
-    "body": "JWT is an authentication method",
-    "description": "Intro to JWT",
-    "tags": [
-      "#JWT"
-    ],
-    "readCount": 1,
-    "readTime": "2 secs",
-    "postTime": "2022-11-08T06:08:51.586Z",
-    "__v": 0
-  }
-}
-```
-
 ### update my blog  (logged in users)
 
-- Route: /author/update/:id
+- Route: /blog/:id
 - Method: patch
 - Header
     - Authorization: Bearer {token}
@@ -354,7 +302,7 @@ Success
 
 ### delete a  blog  (logged in user)
 
-- Route: /author/delete/:id
+- Route: /blog/delete/:id
 - Method: delete
 - Header
     - Authorization: Bearer {token}
@@ -370,6 +318,58 @@ Success
   }
 }
 ```
+
+### Get published blogs for user (logged in user)
+
+- Route: /author/myblogs
+- Method: GET
+
+- Responses
+
+Success
+```
+{
+  "status": true,
+  "blogList": []
+}
+```
+
+---
+### Get a blog with id  (logged in user)
+
+- Route: /author/myblogs/:blogId
+- Method: GET
+- Header
+    - Authorization: Bearer {token}
+
+- Responses
+Success
+```
+{
+  "status": true,
+  "blog": {
+    "author": {
+      "email": "bigshow@gmail.com",
+      "_id": "63667ea856c6eb4f2f960066",
+      "fullname": "Timi Olubode"
+    },
+    "_id": "6369faf30b0896b4b5f26292",
+    "title": "Json token",
+    "authorID": "63667ea856c6eb4f2f960066",
+    "state": "draft",
+    "body": "JWT is an authentication method",
+    "description": "Intro to JWT",
+    "tags": [
+      "#JWT"
+    ],
+    "readCount": 1,
+    "readTime": "2 secs",
+    "postTime": "2022-11-08T06:08:51.586Z",
+    "__v": 0
+  }
+}
+```
+
 
 ## Owner
 - Olubode Sunday Samuel
