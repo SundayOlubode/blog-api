@@ -41,13 +41,15 @@ An Api for a Blogging app
 ## Models
 ---
 
-### User
+### Author
 | field     | datatype | constraints      |
 | --------- | -------- | ---------------- |
 | email     | string   | required, unique |
 | firstname | string   | required         |
 | lastname  | string   | required         |
 | password  | string   | required         |
+| blogs     | array    | optional         |
+| blog_count| string   |                  |
 
 
 ### Blog
@@ -55,7 +57,7 @@ An Api for a Blogging app
 | ----------- | ----------------------- | --------------------------- |
 | title       | string                  | required , unique           |
 | description | string                  |                             |
-| author      | mongoose.Types.ObjectId | ref:'User'                  |
+| author      | mongoose.Types.ObjectId | ref:'author'                  |
 | state       | string                  | enum: ['Draft','Published'] |
 | tags        | string                  |                             |
 | body        | string                  | required                    |
@@ -66,7 +68,7 @@ An Api for a Blogging app
 
 ### Signup User
 
-- Route: /signup
+- Route: /auth/signup
 - Method: POST
 - Body: 
 ```
@@ -82,7 +84,7 @@ An Api for a Blogging app
 ---
 ### Login User
 
-- Route: /login
+- Route: /auth/login
 - Method: POST
 - Body: 
 ```
@@ -125,7 +127,7 @@ Success
 ---
 ### Get published blog
 
-- Route: /home/allblogs
+- Route: /
 - Method: GET
 - Query params: 
     - author
@@ -140,13 +142,47 @@ Success
 Success
 ```
 {
- blog:[allblogs]
+    "docs": [
+        {
+            "_id": "63aad7809a65dc2b289232a6",
+            "title": "AltSchool Admission",
+            "author": "63667ea856c6eb4f2f960066",
+            "state": "draft",
+            "body": "Gain high-level programming skills",
+            "description": "Tech Career",
+            "tags": [
+                "altschool"
+            ],
+            "readCount": 5,
+            "readTime": "2 secs",
+            "postTime": "2022-12-27T11:30:48.611Z",
+            "__v": 0
+        },
+        {
+            "_id": "63aae98d08c1a32d91028337",
+            "title": "AltSchool Blogs",
+            "author": "639e1021487964ac4fe8ac27",
+            "state": "draft",
+            "body": "Intro to Technical Writing",
+            "description": "Tech Career in Technical Writing",
+            "tags": [
+                "technical Writing"
+            ],
+            "readCount": 0,
+            "readTime": "2 secs",
+            "postTime": "2022-12-27T12:47:16.116Z",
+            "__v": 0
+        }
+    ],
+    "total": 3,
+    "limit": 2,
+    "offset": 0
 }
 ```
 
 ### Get published blogs for user (logged in user)
 
-- Route: /user/myblogs
+- Route: /author/myblogs
 - Method: GET
 
 - Responses
@@ -163,7 +199,7 @@ Success
 ---
 ### Create a Blog (logged in user)
 
-- Route: /user/create
+- Route: /author/create
 - Method: POST
 - Header
     - Authorization: Bearer {token}
@@ -209,7 +245,7 @@ Success
 ---
 ### Get a blog with id  (logged in user)
 
-- Route: /user/myblogs/:blogId
+- Route: /author/myblogs/:blogId
 - Method: GET
 - Header
     - Authorization: Bearer {token}
@@ -244,7 +280,7 @@ Success
 
 ### update my blog  (logged in users)
 
-- Route: /user/update/:id
+- Route: /author/update/:id
 - Method: patch
 - Header
     - Authorization: Bearer {token}
@@ -287,7 +323,7 @@ Success
 
 ### delete a  blog  (logged in user)
 
-- Route: /user/delete/:id
+- Route: /author/delete/:id
 - Method: delete
 - Header
     - Authorization: Bearer {token}

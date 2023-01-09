@@ -7,6 +7,7 @@ require('dotenv').config()
 const blogRoutes = require('./routes/blogRoutes')
 const {generateJWT} = require('./controller/utils')
 const userRouter = require('./routes/userRoutes')
+const account = require('./controller/account')
 
 
 const PORT = process.env.PORT
@@ -30,30 +31,8 @@ app.post('/', (req, res) => {
 })
 
 
-app.post('/signup',
-    passport.authenticate('signup', { session: false }),
-    (req, res, next) => {
-        res.status(200).json({
-            status: 'success',
-            message: 'Sign up successful!'
-        })
-    })
-
-
-app.post('/login', async (req, res, next) => {    
-    passport.authenticate('login', { session: false }, async (err, user, info) => {        
-        try {
-
-            if (err) { return next(err) }
-            const token = generateJWT(user)
-            res.status(200).json({ user, token })
-
-        }catch (err) {
-            res.status(401).json(err.message)
-        }
-    })(req, res, next)
-
-})
+app.post('/signup', passport.authenticate('signup', { session: false }), account.signup)
+app.post('/login', passport.authenticate('login', { session: false }, account.login))
 
 
 module.exports = app

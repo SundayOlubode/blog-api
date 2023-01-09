@@ -1,24 +1,26 @@
+//Express
 const express = require('express')
+
 const database = require('./database/mongoDB')
+
 const bodyparser = require('body-parser')
+
+//Security
 const passport = require('passport')
 const rateLimit = require("express-rate-limit");
 require('./authentication/passportJWT')
 require('dotenv').config()
-const blogRoutes = require('./routes/blogRoutes')
-const { generateJWT } = require('./controller/utils')
-const { signup, login } = require('./controller/account')
-const userRouter = require('./routes/userRoutes')
+
+//Middlewares
+const account = require('./controller/account')
+const authorRouter = require('./routes/author.route')
 const validation = require('./validation/validation')
+
+const blogController = require('./controller/blogpost')
 
 const PORT = process.env.PORT
 
 const app = express()
-
-
-//Middlewares
-app.use(bodyparser.json())
-app.use(bodyparser.urlencoded({ extended: false }))
 
 const limiter = rateLimit({
     windowMs: 2 * 60 * 1000, // 15 minutes
@@ -29,27 +31,22 @@ const limiter = rateLimit({
     skipFailedRequests: true
 })
 
-//routes
+//Middlewares
+app.use(bodyparser.json())
+app.use(bodyparser.urlencoded({ extended: false }))
 app.use(limiter)
 
-app.use('/home', blogRoutes)
-app.use('/user', userRouter)
-app.set('views engine', 'ejs')
 
-//Connect to databse
+//Routers
+app.use('/author', passport.authenticate('jwt', {session: false}), authorRouter)
+
+// //Databse
 database.connection()
 
-app.get('/', (req, res) => {
-    res.status(200).json({
-        message: 'Welcome to Altschool Student Blog'
-    })
-})
+app.post('/auth/signup', validation.validateSignup, passport.authenticate('signup', { session: false }), account.signup)
+app.post('/auth/login', validation.validateLogin, passport.authenticate('login', { session: false }), account.login)
 
-
-app.post('/signup', validation.validateSignup, passport.authenticate('signup', { session: false }), signup)
-
-
-app.post('/login', validation.validateLogin, passport.authenticate('login', { session: false }), login)
+app.get('/', blogController.getBlogs)
 
 
 app.listen(PORT, () => {

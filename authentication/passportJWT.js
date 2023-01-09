@@ -2,7 +2,7 @@ require('dotenv').config()
 const passport = require('passport')
 const jwt = require('jsonwebtoken')
 const passportjwt = require('passport-jwt')
-const userModel = require('../Models/userModel')
+const userModel = require('../Models/author.model')
 require('dotenv').config()
 const localStrategy = require('passport-local').Strategy
 const JWTStrategy = passportjwt.Strategy
@@ -66,7 +66,7 @@ passport.use(
             if (!validate) { return done(null, false) }
 
             const token = generateJWT(user)
-            done(null, token)
+            done(null, {user, token})
         } catch (error) {
             return done(error, false)
         }

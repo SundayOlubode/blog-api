@@ -3,7 +3,7 @@ const { Schema } = mongooose
 
 const bcrypt = require('bcrypt')
 
-const UserSchema = new Schema({
+const AuthorSchema = new Schema({
     email: {
         type: String,
         required : [true, 'Email is required!'], 
@@ -30,7 +30,7 @@ const UserSchema = new Schema({
 })
 
 
-UserSchema.pre('save', async function (next) {
+AuthorSchema.pre('save', async function (next) {
     if(this.blog){
       this.blog_count = await this.blogs.length;  
     }
@@ -40,10 +40,10 @@ UserSchema.pre('save', async function (next) {
     next()
 })
 
-UserSchema.methods.isValidPassword = async function (password)  {
+AuthorSchema.methods.isValidPassword = async function (password)  {
     const compare = await bcrypt.compare(password, this.password)  
     return compare;
 }
 
-const Users = mongooose.model('users', UserSchema)
-module.exports = Users
+const Author = mongooose.model('author', AuthorSchema)
+module.exports = Author

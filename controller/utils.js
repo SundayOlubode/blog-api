@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
-const userModel = require('../Models/userModel')
+const userModel = require('../Models/author.model')
 require('mongoose')
 
 

@@ -2,6 +2,7 @@ const mongooose = require('mongoose')
 const { Schema } = mongooose
 const moment = require('moment')
 const mongoosePaginate = require('mongoose-paginate')
+const Users = require('./author.model')
 
 
 const ObjectId = Schema.ObjectId;
@@ -12,12 +13,7 @@ const blogSchema = new Schema({
         required : [true, 'Blog title is required!'],
         unique: [true, 'Title already exists!']
     },
-    authorID: ObjectId,
-    author: {
-        email: String,
-        _id: ObjectId,
-        fullname: String
-    },
+    author:  {type: mongooose.Types.ObjectId, ref: 'author', localField: 'author', foreignField: '_id'},
     state: {
         type: String, 
         default: 'draft'

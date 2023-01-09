@@ -11,148 +11,172 @@ const {
 require('dotenv').config()
 require('mongoose')
 
-const blogModel = require('../Models/blogModel')
-const userModel = require('../Models/userModel')
-
+const blogModel = require('../Models/blog.model')
+const authorModel = require('../Models/author.model')
 
 // Get all blogs
-const getAllBlogs = async (req) => {
+exports.getBlogs = (req, res, next) => {
+    console.log(req.query);
+    
+    var { query, options } = addQueryParams(query, options, req.query)
 
-    let { author, title, tags, readCount, readTime, postTime } = req.query
+    options.populate = ({ path: 'author', select: 'firstname lastname blog_count' })
 
-    if (author) {
-        query = { state: 'published', "author.fullname": author }
-        if (title) { query.title = title }
-        if (tags) { query.tags = tags }
-
-  
-    }
-
-    blogModel.paginate(query, options)
-    // .populate('users')
-    .then((blogs) => {
-        res.status(200).json(blogs)
-    }).catch((err) => {
-        res.status(401).json({ status: false, message: err.message })
-    })
-
-    if (!blog) {
-        throw new Error(`blog with ID ${blogId} not found!`)
-    }
-
-    blog.readCount += 1;
-    await blog.save()
-
-    return blog
+    blogModel
+        .paginate(query, options)
+        .then((blogs) => {
+            if (req.query.author) {
+                const result = blogs.docs
+                    .filter((blog) => {
+                        return blog.author.firstname === req.query.author
+                    })
+                res.status(200).json(result)
+            }
+        }).catch((err) => {
+            res.status(401).json({
+                status: false,
+                message: err.message
+            })
+        })
 }
 
-const getMyBlogs = async ({ _id }) => {
 
-    const author = await userModel.findById({ _id: _id })
-    if (!author) {
-        throw new Error('Please log in to access you blog list')
-    }
-
-    let blogs = await blogModel.find({ authorID: _id })
-    if (!blogs) {
-        throw new Error('You do not have any blog yet!')
-    }
-
-    var query = { authorID: _id };
+exports.getMyBlogs = async (req, res, next) => {
+    var query = {}
     var options = { offset: 0, limit: 2 };
 
-    blogs = await blogModel.paginate(query, options)
-    blogs = blogs.docs
+    const blogId = req.query.id
+    if (blogId) query._id = blogId
 
-    return blogs;
+    const author = await authorModel.findById({ _id: req.user._id })
+    if (!author) { throw new Error('Please log in to access you blog list') }
+
+    let blogs = await blogModel.find({ author: req.user._id })
+    if (!blogs) { throw new Error('You do not have any blog yet!') }
+
+    query.author = req.user._id;
+
+    try {
+
+        blogs = await blogModel.paginate(query, options)
+        res.status(200).json({ status: true, blogs })
+
+    } catch (error) {
+        res.status(401).json({ status: false, message: err.message })
+    }
 }
 
 // Post a blog
-const createABlog = async (req, user) => {
-    try {
-        let blog = req.body
+exports.createABlog = (req, res, next) => {
+    let blog = req.body
+    let user = req.user
 
-        console.log('Users', user);
+    console.log('User', user);
 
-        blog.readTime = readTimeCalcultor(blog)
-        blog.authorID = user._id
-        blog.author = user
-
-        const newblog = await blogModel.create(blog)
-        await updateAuthorsBlogsArray(newblog)
-        await incrementAuthorsBlogCount(newblog)
-
-        return newblog;
-
-    } catch (error) {
-        return (error)
+    if (!user) {
+        throw new Error('Please sign in to continue!')
     }
+
+    blog.readTime = readTimeCalcultor(blog)
+    blog.author = req.user._id
+
+    blogModel.create(blog)
+        .then(async (newblog) => {
+            await updateAuthorsBlogsArray(newblog)
+            await incrementAuthorsBlogCount(newblog)
+            res.status(200).json({ status: true, newblog })
+        }).catch((err) => {
+            res.status(401).json({ status: false, message: err.message })
+        })
+
 }
 
 // Update blog's state
-const updateBlog = async (req, token) => {
+exports.updateBlog = async (req, res, next) => {
 
-    const { id } = req.params;
-    const { state } = req.body;
+    const { id } = req.query;
+    const { state } = req.query;
     const newBody = req.body.body
 
-    const blog = await blogModel.findById(id)
+    blogModel.findById({ _id: id })
+        .then(async (blog) => {
+            var author = blog.author
+            var user = req.user._id
 
-    if (!blog) { throw new Error(`blog with ID ${id} not found!`) }
+            if (author != user) throw new Error('You can not modify this blog')
 
-    var authorID = blog.authorID
-    var userID = token._id
+            if (newBody) blog.body = await editBlog(req, blog, newBody)
 
-    if (authorID != userID) {
-        throw new Error('You do not have access to modify this blog')
-    }
-
-    if (newBody) { blog.body = await editBlog(req, blog, newBody) }
-
-    if (state) {
-        if (state === blog.state || state !== 'published') {
-            throw new Error(`Invalid Operation!`)
-        }
-        blog.state = state;
-    }
-
-    await blog.save()
-    return blog
+            if (state) {
+                if (state === blog.state || state != 'published') throw new Error(`Invalid Operation!`)
+                blog.state = state;
+            }
+            await blog.save()
+            res.status(200).json({ status: true, blog })
+        })
+        .catch((err) => {
+            res.status(404).json({
+                status: false,
+                message: err.message
+            })
+        })
 }
 
 
 // Delete blog by id
-const deleteBlogById = async (req, res, token, next) => {
-    const { id } = req.params;
-    var authorID = blog.authorID
-    var userID = token._id
+exports.deleteBlogById = async (req, res, next) => {
 
+    const { id } = req.query;
+    const blog = await blogModel.findById({ _id: id })
 
-    console.log('titlt: ', title);
-    if (authorID != userID) {
-        throw new Error('You do not have access to delete this blog')
+    var author = blog.author
+    var user = req.user._id
+
+    if (author != user) {
+        const error = new Error('You can not delete this blog!')
+        return next(error)
     }
-
-    console.log('Verified!');
 
     blogModel.findByIdAndDelete({ _id: id })
         .then(async (blog) => {
             await removeBlogFromAuthorsList(blog)
             await decrementAuthorsBlogCount(blog)
             console.log('deleted!');
-            return title;
-        }).catch((error) => {
-            return error
+            res.status(200).json({ status: true, message: `Blog deleted successfully!` })
+        }).catch((err) => {
+            res.json({ status: false, message: err.message })
         })
-
-
 }
 
-module.exports = {
-    getAllBlogs,
-    getBlogById,
-    createABlog,
-    deleteBlogById,
-    updateBlog,
-    getMyBlogs
+exports.getblogById = async (req, res, next) => {
+    const { id } = req.query;
+
+    blogModel.findById({ _id: id })
+        .then(async (blog) => {
+            blog.readCount += 1;
+            await blog.save()
+            res.status(200).json({ blog })
+        }).catch((err) => {
+            res.status(401).json({ status: false, message: err.message })
+        })
+}
+
+exports.home = (req, res, next) => {
+    res.status(200).render('index')
+}
+
+const addQueryParams = (query, options, params) => {
+    let { title, tags, readCount, readTime, postTime } = params
+
+    var query = { state: 'draft' }
+
+    var options = {}
+
+    if (title) { query.title = title }
+    if (tags) { query.tags = tags }
+    if (readCount) { query.readCount = readCount }
+    if (readTime) { query.readTime = readTime }
+    if (postTime) { query.postTime = postTime }
+
+    return { query, options }
 }
