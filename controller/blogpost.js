@@ -132,12 +132,18 @@ exports.deleteBlogById = async (req, res, next) => {
     const { id } = req.query;
     const blog = await blogModel.findById({ _id: id })
 
-    var author = blog.author
+    try {
+        var author = blog.author
+    } catch {
+        const error = new Error(`This blog with id ${id} does not exist`)
+        return res.json({ status: false, message: error.message })
+    }
+    
     var user = req.user._id
 
     if (author != user) {
-        const error = new Error('You can not delete this blog!')
-        return next(error)
+        const error = new Error('You are not authorized to delete this blog!')
+        return res.json({ status: false, message: error.message })
     }
 
     blogModel.findByIdAndDelete({ _id: id })

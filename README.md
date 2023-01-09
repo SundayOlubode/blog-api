@@ -233,18 +233,19 @@ Success
 ---
 ### Create a Blog (logged in user)
 
-- Route: /author/create
+- Route: /blog/create
 - Method: POST
 - Header
     - Authorization: Bearer {token}
 - Body: 
 ```
 {
-  "title": "Json token",
-  "body": "JWT is an authentication method",
-  "description": "Intro to JWT",
-  "tags": ["#JWT"]
+    "title": "Recursion",
+    "body": "Recursion in programming is an alternative to looping. It provides a way to execute a function in itself with varying inputs",
+    "description": "Recursion in JS",
+    "tags": ["DSA", "Recursion"]
 }
+
 ```
 
 - Responses
@@ -252,27 +253,23 @@ Success
 Success
 ```
 {
-  "status": true,
-  "newblog": {
-    "title": "Json token",
-    "authorID": "63667ea856c6eb4f2f960066",
-    "author": {
-      "email": "bigshow@gmail.com",
-      "_id": "63667ea856c6eb4f2f960066",
-      "fullname": "Timi Olubode"
-    },
-    "state": "draft",
-    "body": "JWT is an authentication method",
-    "description": "Intro to JWT",
-    "tags": [
-      "#JWT"
-    ],
-    "readCount": 0,
-    "readTime": "2 secs",
-    "postTime": "2022-11-08T06:08:51.586Z",
-    "_id": "6369faf30b0896b4b5f26292",
-    "__v": 0
-  }
+    "status": true,
+    "newblog": {
+        "title": "Recursion",
+        "author": "63bc5bf5c5dee7517f10d0af",
+        "state": "draft",
+        "body": "Recursion in programming is an alternative to looping. It provides a way to execute a function in itself with varying inputs",
+        "description": "Recursion in JS",
+        "tags": [
+            "DSA",
+            "Recursion"
+        ],
+        "readCount": 0,
+        "readTime": "10 secs",
+        "postTime": "2023-01-09T19:12:05.020Z",
+        "_id": "63bc683144d29cbd2216a72f",
+        "__v": 0
+    }
 }
 ```
 

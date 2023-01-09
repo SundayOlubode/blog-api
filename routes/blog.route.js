@@ -1,10 +1,15 @@
 const express = require('express')
 const blogRouter = express.Router()
-const { getAllBlogs } = require('../controller/blogpost')
+
+const blogController = require('../controller/blogpost')
 require('../authentication/passportJWT')
 
 
-blogRouter.get('/allblogs', getAllBlogs)
+blogRouter.post('/create', blogController.createABlog)
+
+blogRouter.delete('/delete', blogController.deleteBlogById)
+
+blogRouter.patch('/update', blogController.updateBlog)
 
 
 module.exports = blogRouter

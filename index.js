@@ -14,6 +14,7 @@ require('dotenv').config()
 //Middlewares
 const account = require('./controller/account')
 const authorRouter = require('./routes/author.route')
+const blogRouter = require('./routes/blog.route')
 const validation = require('./validation/validation')
 
 const blogController = require('./controller/blogpost')
@@ -40,10 +41,13 @@ app.use(limiter)
 //Routers
 app.use('/author', passport.authenticate('jwt', {session: false}), authorRouter)
 
+app.use('/blog', passport.authenticate('jwt', {session: false}), blogRouter)
+
 // //Databse
 database.connection()
 
 app.post('/auth/signup', validation.validateSignup, passport.authenticate('signup', { session: false }), account.signup)
+
 app.post('/auth/login', validation.validateLogin, passport.authenticate('login', { session: false }), account.login)
 
 app.get('/', blogController.getBlogs)
