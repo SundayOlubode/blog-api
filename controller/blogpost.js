@@ -17,21 +17,24 @@ const authorModel = require('../Models/author.model')
 // Get all blogs
 exports.getBlogs = (req, res, next) => {
     console.log(req.query);
-    
+
     var { query, options } = addQueryParams(query, options, req.query)
+
+    console.log('query', query);
 
     options.populate = ({ path: 'author', select: 'firstname lastname blog_count' })
 
     blogModel
         .paginate(query, options)
         .then((blogs) => {
+            let result = blogs;
             if (req.query.author) {
-                const result = blogs.docs
+                result = blogs.docs
                     .filter((blog) => {
                         return blog.author.firstname === req.query.author
                     })
-                res.status(200).json(result)
             }
+            res.status(200).json(result)
         }).catch((err) => {
             res.status(401).json({
                 status: false,
@@ -168,7 +171,7 @@ exports.home = (req, res, next) => {
 const addQueryParams = (query, options, params) => {
     let { title, tags, readCount, readTime, postTime } = params
 
-    var query = { state: 'draft' }
+    var query = { state: 'published' }
 
     var options = {}
 

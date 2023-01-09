@@ -144,25 +144,36 @@ Success
 {
     "docs": [
         {
-            "_id": "63aad7809a65dc2b289232a6",
-            "title": "AltSchool Admission",
-            "author": "63667ea856c6eb4f2f960066",
-            "state": "draft",
-            "body": "Gain high-level programming skills",
-            "description": "Tech Career",
+            "_id": "63ad5f8ec6d65a72ab3f5927",
+            "title": "How to Use Mongoose Population",
+            "author": {
+                "_id": "63ad5dec20414c5dd256018e",
+                "firstname": "Pius",
+                "lastname": "Ezekiel",
+                "blog_count": 0
+            },
+            "state": "published",
+            "body": "Mongoose population enables you to acess another document from a document",
+            "description": "mongoose population with nodejs",
             "tags": [
-                "altschool"
+                "mongoose",
+                "population"
             ],
-            "readCount": 5,
-            "readTime": "2 secs",
-            "postTime": "2022-12-27T11:30:48.611Z",
+            "readCount": 0,
+            "readTime": "5 secs",
+            "postTime": "2022-12-29T09:35:48.666Z",
             "__v": 0
         },
         {
-            "_id": "63aae98d08c1a32d91028337",
+            "_id": "63ad643bfc27698b915d5394",
             "title": "AltSchool Blogs",
-            "author": "639e1021487964ac4fe8ac27",
-            "state": "draft",
+            "author": {
+                "_id": "63ad6390fc27698b915d538f",
+                "firstname": "Timi",
+                "lastname": "Olubode",
+                "blog_count": 0
+            },
+            "state": "published",
             "body": "Intro to Technical Writing",
             "description": "Tech Career in Technical Writing",
             "tags": [
@@ -170,13 +181,36 @@ Success
             ],
             "readCount": 0,
             "readTime": "2 secs",
-            "postTime": "2022-12-27T12:47:16.116Z",
+            "postTime": "2022-12-29T09:44:06.692Z",
+            "__v": 0
+        },
+        {
+            "_id": "63ad64a7fc27698b915d5398",
+            "title": "Data Structures and Algorithm",
+            "author": {
+                "_id": "63ad6390fc27698b915d538f",
+                "firstname": "Timi",
+                "lastname": "Olubode",
+                "blog_count": 0
+            },
+            "state": "published",
+            "body": "Data Structures and Algorithm provies fundamental knowledge to solving computational problems with programming languages",
+            "description": "DSA for absolute beginners",
+            "tags": [
+                "DSA",
+                "Algorithms"
+            ],
+            "readCount": 0,
+            "readTime": "7 secs",
+            "postTime": "2022-12-29T09:44:06.692Z",
             "__v": 0
         }
     ],
-    "total": 3,
-    "limit": 2,
-    "offset": 0
+    "total": 4,
+    "limit": 10,
+    "offset": 0,
+    "page": 1,
+    "pages": 1
 }
 ```
 
