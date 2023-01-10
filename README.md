@@ -321,7 +321,7 @@ Success
 
 ### Get published blogs for user (logged in user)
 
-- Route: /author/myblogs
+- Route: /author/blogs
 - Method: GET
 
 - Responses
@@ -330,7 +330,7 @@ Success
 ```
 {
   "status": true,
-  "blogList": []
+  "blogList": [blogs]
 }
 ```
 

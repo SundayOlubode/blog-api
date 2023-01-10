@@ -1,13 +1,14 @@
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 const userModel = require('../Models/author.model')
+const blogModel = require('../Models/blog.model')
 require('mongoose')
 
 
 
 const updateAuthorsBlogsArray = async (newblog) => {
     try {
-        const authorID = newblog.author.id
+        const authorID = newblog.author
         const { _id, title } = newblog
 
         const author = await userModel.findById({ _id: authorID })
@@ -20,7 +21,7 @@ const updateAuthorsBlogsArray = async (newblog) => {
 
 const removeBlogFromAuthorsList = async (blog) => {
     try {
-        const authorID = blog.author.id
+        const authorID = blog.author
         const { _id, title } = blog
 
         const author = await userModel.findById({ _id: authorID })
@@ -31,17 +32,27 @@ const removeBlogFromAuthorsList = async (blog) => {
     }
 }
 
+const incrementBlogsReadCount = async (b) => {
+    try {
+        const blogID = b._id
+        console.log('blogID ',blogID);
+        const blog = await blogModel.findById({ _id: blogID })
+        console.log('blog', blog);
+        await blog.updateOne({ $inc: { readCount: 1 } })
+    } catch (error) { return error }
+}
+
 const incrementAuthorsBlogCount = async (blog) => {
     try {
-        const authorID = blog.author.id
+        const authorID = blog.author
         const author = await userModel.findById({ _id: authorID })
-        await author.updateOne({ $inc: { blog_count: 1 } })
+        await author.updateOne({ $inc: { blog_count : 1 } })
     } catch (error) { return error }
 }
 
 const decrementAuthorsBlogCount = async (blog) => {
     try {
-        const authorID = blog.author.id
+        const authorID = blog.author
         const author = await userModel.findById({ _id: authorID })
         await author.updateOne({ $inc: { blog_count: -1 } })
     } catch (error) { return error }
@@ -108,5 +119,6 @@ module.exports = {
     decrementAuthorsBlogCount,
     incrementAuthorsBlogCount,
     removeBlogFromAuthorsList,
-    updateAuthorsBlogsArray
+    updateAuthorsBlogsArray,
+    incrementBlogsReadCount
 }

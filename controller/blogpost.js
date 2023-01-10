@@ -4,7 +4,8 @@ const {
     decrementAuthorsBlogCount,
     incrementAuthorsBlogCount,
     removeBlogFromAuthorsList,
-    updateAuthorsBlogsArray
+    updateAuthorsBlogsArray,
+    incrementAuthorsReadCount
 } = require('./utils')
 
 
@@ -26,8 +27,12 @@ exports.getBlogs = (req, res, next) => {
 
     blogModel
         .paginate(query, options)
-        .then((blogs) => {
+        .then( async (blogs) => {
             let result = blogs;
+            if(query._id){
+                console.log('hi');
+                await incrementBlogsReadCount(blogs.docs[0])
+            }
             if (req.query.author) {
                 result = blogs.docs
                     .filter((blog) => {
@@ -48,25 +53,28 @@ exports.getMyBlogs = async (req, res, next) => {
     var query = {}
     var options = { offset: 0, limit: 2 };
 
-    const blogId = req.query.id
-    if (blogId) query._id = blogId
+    query.author = req.user._id
 
-    const author = await authorModel.findById({ _id: req.user._id })
-    if (!author) { throw new Error('Please log in to access you blog list') }
-
-    let blogs = await blogModel.find({ author: req.user._id })
-    if (!blogs) { throw new Error('You do not have any blog yet!') }
-
-    query.author = req.user._id;
-
-    try {
-
-        blogs = await blogModel.paginate(query, options)
-        res.status(200).json({ status: true, blogs })
-
-    } catch (error) {
-        res.status(401).json({ status: false, message: err.message })
+    if(req.query.id){
+        query._id = req.query.id
     }
+
+    blogModel
+        .paginate(query, options)
+        .then((blogs) => {
+            if(blogs.docs.length < 1){
+                return res.status(404).json({
+                    status: false,
+                    message: req.query.id? 'Blog with specified author not found!': 'No blog found!'
+                })
+            }
+            res.status(200).json(blogs)
+        }).catch((error) => {
+            res.status(401).json({
+                status: false,
+                message: error.message
+            })
+        })
 }
 
 // Post a blog
@@ -138,7 +146,7 @@ exports.deleteBlogById = async (req, res, next) => {
         const error = new Error(`This blog with id ${id} does not exist`)
         return res.json({ status: false, message: error.message })
     }
-    
+
     var user = req.user._id
 
     if (author != user) {
@@ -170,12 +178,10 @@ exports.getblogById = async (req, res, next) => {
         })
 }
 
-exports.home = (req, res, next) => {
-    res.status(200).render('index')
-}
+
 
 const addQueryParams = (query, options, params) => {
-    let { title, tags, readCount, readTime, postTime } = params
+    let { title, tags, readCount, readTime, postTime, id } = params
 
     var query = { state: 'published' }
 
@@ -186,6 +192,7 @@ const addQueryParams = (query, options, params) => {
     if (readCount) { query.readCount = readCount }
     if (readTime) { query.readTime = readTime }
     if (postTime) { query.postTime = postTime }
+    if (id) { query._id = id }
 
     return { query, options }
 }

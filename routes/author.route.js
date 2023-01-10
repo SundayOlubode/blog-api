@@ -13,5 +13,4 @@ const blogController = require('../controller/blogpost')
 userRouter.get('/blogs', blogController.getMyBlogs)
 
 
-
 module.exports = userRouter
