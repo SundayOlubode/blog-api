@@ -82,8 +82,6 @@ exports.createABlog = (req, res, next) => {
     let blog = req.body
     let user = req.user
 
-    console.log('User', user);
-
     if (!user) {
         throw new Error('Please sign in to continue!')
     }
@@ -106,6 +104,12 @@ exports.createABlog = (req, res, next) => {
 exports.updateBlog = async (req, res, next) => {
 
     const { id } = req.query;
+    if(!id){
+        res.status(400).json({
+            status: false,
+            message: 'Please provide and id!'
+        })
+    }
     const { state } = req.query;
     const newBody = req.body.body
 
@@ -115,7 +119,6 @@ exports.updateBlog = async (req, res, next) => {
             var user = req.user._id
 
             if (author != user) throw new Error('You can not modify this blog')
-
             if (newBody) blog.body = await editBlog(req, blog, newBody)
 
             if (state) {
@@ -136,8 +139,14 @@ exports.updateBlog = async (req, res, next) => {
 
 // Delete blog by id
 exports.deleteBlogById = async (req, res, next) => {
-
     const { id } = req.query;
+
+    if(!id){
+        res.status(400).json({
+            status: false,
+            message: 'Please provide and id!'
+        })
+    }
     const blog = await blogModel.findById({ _id: id })
 
     try {
@@ -146,14 +155,12 @@ exports.deleteBlogById = async (req, res, next) => {
         const error = new Error(`This blog with id ${id} does not exist`)
         return res.json({ status: false, message: error.message })
     }
-
     var user = req.user._id
 
     if (author != user) {
         const error = new Error('You are not authorized to delete this blog!')
         return res.json({ status: false, message: error.message })
     }
-
     blogModel.findByIdAndDelete({ _id: id })
         .then(async (blog) => {
             await removeBlogFromAuthorsList(blog)

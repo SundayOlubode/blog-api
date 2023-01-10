@@ -2,17 +2,17 @@ require('../authentication/passportJWT')
 
 const passport = require('passport')
 const express = require('express')
-const userRouter = express.Router()
+const authorRouter = express.Router()
 const validation = require('../validation/validation')
 const blogController = require('../controller/blogpost')
 
 
 
-// userRouter
+// authorRouter
 
-userRouter.get('/profile', blogController.getProfile)
+authorRouter.get('/profile', blogController.getProfile)
 
-userRouter.get('/blogs', blogController.getMyBlogs)
+authorRouter.get('/blogs', blogController.getMyBlogs)
 
 
-module.exports = userRouter
+module.exports = authorRouter

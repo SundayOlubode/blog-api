@@ -40,10 +40,16 @@ app.use(limiter)
 
 
 
+
+
+
 //Routers
 app.use('/author', passport.authenticate('jwt', {session: false}), authorRouter)
 
 app.use('/blog', passport.authenticate('jwt', {session: false}), blogRouter)
+
+
+
 
 
 
