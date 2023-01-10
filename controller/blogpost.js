@@ -5,7 +5,7 @@ const {
     incrementAuthorsBlogCount,
     removeBlogFromAuthorsList,
     updateAuthorsBlogsArray,
-    incrementAuthorsReadCount
+    incrementBlogsReadCount
 } = require('./utils')
 
 
@@ -178,7 +178,20 @@ exports.getblogById = async (req, res, next) => {
         })
 }
 
-
+exports.getProfile = async (req, res, next) => {
+    authorModel.findById(req.user._id)
+        .then((author) => {
+            res.status(200).json({
+                status: true,
+                author: author
+            })
+        }).catch((error) => {
+            res.status(401).json({
+                status: false,
+                message: error.message
+            })
+        })
+}
 
 const addQueryParams = (query, options, params) => {
     let { title, tags, readCount, readTime, postTime, id } = params

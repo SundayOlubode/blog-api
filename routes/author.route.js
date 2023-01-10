@@ -10,6 +10,8 @@ const blogController = require('../controller/blogpost')
 
 // userRouter
 
+userRouter.get('/profile', blogController.getProfile)
+
 userRouter.get('/blogs', blogController.getMyBlogs)
 
 

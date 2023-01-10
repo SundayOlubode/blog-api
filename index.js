@@ -38,10 +38,15 @@ app.use(bodyparser.urlencoded({ extended: false }))
 app.use(limiter)
 
 
+
+
 //Routers
 app.use('/author', passport.authenticate('jwt', {session: false}), authorRouter)
 
 app.use('/blog', passport.authenticate('jwt', {session: false}), blogRouter)
+
+
+
 
 // //Databse
 database.connection()
